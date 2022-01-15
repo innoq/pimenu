@@ -56,7 +56,7 @@ class PiMenu(Frame):
         :return: None
         """
         with open(self.path + '/pimenu.yaml', 'r') as f:
-            doc = yaml.load(f)
+            doc = yaml.safe_load(f)
         self.lastinit = os.path.getmtime(self.path + '/pimenu.yaml')
 
         if len(self.framestack):
