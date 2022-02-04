@@ -1,14 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import tkinter.constants as TkC
 import os
-import subprocess
 import sys
-from tkinter import Tk, Frame, Button, Label, PhotoImage
-from math import sqrt, floor, ceil
-
 import yaml
+import logging
+import datetime
+import subprocess
+import tkinter.constants as TkC
 
+from scanstation import execute
+from math import sqrt, floor, ceil
+from tkinter import Tk, Frame, Button, Label, PhotoImage
+
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', filename='/home/scan/logs/pimenu.log', encoding='utf-8', level=logging.DEBUG)
 
 class FlatButton(Button):
     def __init__(self, master=None, cnf=None, **kw):
@@ -32,7 +36,6 @@ class FlatButton(Button):
             activebackground=color,
             activeforeground="white"
         )
-
 
 class PiMenu(Frame):
     framestack = []
@@ -218,7 +221,10 @@ class PiMenu(Frame):
         self.parent.update()
 
         # excute shell script
-        subprocess.call([self.path + '/pimenu.sh'] + actions)
+        #subprocess.call([self.path + '/pimenu.sh'] + actions)
+        timestamp = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+        logging.debug("Timestamp: %s", timestamp)
+        execute( timestamp, actions)
 
         # remove delay screen and show menu again
         delay.destroy()
@@ -237,7 +243,6 @@ class PiMenu(Frame):
             self.destroy_top()
             self.show_top()
 
-
 def main():
     root = Tk()
     root.geometry("320x240")
@@ -246,7 +251,6 @@ def main():
         root.wm_attributes('-fullscreen', True)
     PiMenu(root)
     root.mainloop()
-
 
 if __name__ == '__main__':
     main()
