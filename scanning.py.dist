@@ -1,0 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+import logging
+
+def scan(timestamp, name):
+    logging.debug("scan('{}‘,’{}'".format(timestamp, name))

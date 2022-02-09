@@ -5,14 +5,17 @@ import sys
 import yaml
 import logging
 import datetime
-import subprocess
 import tkinter.constants as TkC
 
-from scanstation import execute
+from scanning import scan
 from math import sqrt, floor, ceil
+from configparser import ConfigParser
 from tkinter import Tk, Frame, Button, Label, PhotoImage
 
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', filename='/home/scan/logs/pimenu.log', encoding='utf-8', level=logging.DEBUG)
+config_object = ConfigParser()
+config_object.read('scan-station.ini')
+logs    = config_object['FOLDER']['logs']
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', filename=logs + '/scanning.log', encoding='utf-8', level=logging.DEBUG)
 
 class FlatButton(Button):
     def __init__(self, master=None, cnf=None, **kw):
@@ -42,12 +45,11 @@ class PiMenu(Frame):
     icons = {}
     path = ''
     lastinit = 0
-
+    
     def __init__(self, parent):
         Frame.__init__(self, parent, background="white")
         self.parent = parent
         self.pack(fill=TkC.BOTH, expand=1)
-
         self.path = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.initialize()
 
@@ -220,11 +222,12 @@ class PiMenu(Frame):
         label.pack(fill=TkC.BOTH, expand=1)
         self.parent.update()
 
-        # excute shell script
-        #subprocess.call([self.path + '/pimenu.sh'] + actions)
-        timestamp = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+        # excute
+        start = datetime.datetime.now()
+        timestamp = start.strftime('%Y%m%d-%H%M%S')
         logging.debug("Timestamp: %s", timestamp)
-        execute( timestamp, actions)
+        scan( timestamp, actions)
+        logging.debug("Ready: %s", (datetime.datetime.now() - start))
 
         # remove delay screen and show menu again
         delay.destroy()
